@@ -33,6 +33,16 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function exerciseRings()
+    {
+        return $this->hasMany(ExerciseRing::class);
+    }
+
+    public function goal()
+    {
+        return $this->hasOne(Goal::class);
+    }
+
     /**
      * The attributes that should be cast.
      *

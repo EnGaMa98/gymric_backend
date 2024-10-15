@@ -14,11 +14,8 @@ return new class extends Migration
         Schema::create('exercise_rings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->integer('move_goal');
             $table->integer('move_progress');
-            $table->integer('exercise_goal');
             $table->integer('exercise_progress');
-            $table->integer('stand_goal');
             $table->integer('stand_progress');
             $table->date('date'); // Guardar la fecha de cada entrada
             $table->timestamps();

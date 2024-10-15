@@ -11,14 +11,13 @@ class ExerciseRing extends Model
 
     protected $fillable = [
         'user_id',
-        'move_goal',
         'move_progress',
-        'exercise_goal',
         'exercise_progress',
-        'stand_goal',
         'stand_progress',
         'date',
     ];
+    public function user() 
+    {
+        return $this->belongsTo(User::class);
+    }
 }
-//prova
-
