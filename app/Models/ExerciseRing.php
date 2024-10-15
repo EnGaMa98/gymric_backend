@@ -20,4 +20,5 @@ class ExerciseRing extends Model
         'date',
     ];
 }
+//prova
 
