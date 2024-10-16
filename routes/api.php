@@ -12,13 +12,17 @@ Route::post('login', [AuthController::class, 'login']);
 
 //exercise_rings
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('exercise-rings', [ExerciseRingController::class, 'index']);
-    Route::post('exercise-rings', [ExerciseRingController::class, 'store']);
-    Route::put('exercise-rings/{id}', [ExerciseRingController::class, 'update']);
-    Route::delete('exercise-rings/{id}', [ExerciseRingController::class, 'destroy']);
+
+    Route::prefix('exercise-rings')->group(function () {
+        Route::get('/', [ExerciseRingController::class, 'index']);
+        Route::get('/{exerciseRing}', [ExerciseRingController::class, 'index']);
+        Route::post('/new', [ExerciseRingController::class, 'store']);
+        Route::post('/{exerciseRing}', [ExerciseRingController::class, 'store']);
+        Route::delete('/{exerciseRing}', [ExerciseRingController::class, 'destroy']);
+    });
 
     //Goals
-    Route::get('goals', [GoalController::class, 'index']); 
+    Route::get('goals', [GoalController::class, 'index']);
     Route::put('goals/{id}', [GoalController::class, 'update']);
 
     //logout d'usuari
