@@ -47,4 +47,11 @@ class AuthController extends Controller
         $token= $user->createToken('app')->plainTextToken;
         return response()->json(['token' => $token], 201);
     }
+    public function logout(Request $request)
+    {
+        // Elimina el token de l'usuari perque no es pugui accedir
+        auth()->logout();
+
+        return response()->json(['message' => 'Successfully logged out'], 200);
+    }
 }

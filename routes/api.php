@@ -18,6 +18,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('exercise-rings/{id}', [ExerciseRingController::class, 'destroy']);
 
     //Goals
-    Route::get('goals', [GoalController::class, 'index']); // Obtener el goal del usuario
-    Route::put('goals/{id}', [GoalController::class, 'update']); // Actualizar el goal del usuario
+    Route::get('goals', [GoalController::class, 'index']); 
+    Route::put('goals/{id}', [GoalController::class, 'update']);
+
+    //logout d'usuari
+    Route::post('logout', [AuthController::class, 'logout']);
 });
