@@ -54,7 +54,7 @@ class GoalService extends BaseService
 
         $goal->save();
 
-        if ($goal->isActive) {
+        if ($goal->wasRecentlyCreated) {
             Auth::user()->update([
                 'goal_id' => $goal->id,
             ]);
