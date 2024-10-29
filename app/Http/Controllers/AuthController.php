@@ -73,13 +73,9 @@ class AuthController extends BaseController
         return response()->json(['token' => $token], 201);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        if (auth()->check()) {
-            auth()->logout();
-            return response()->json(['message' => 'Successfully logged out'], 200);
-        }
-
-        return response()->json(['message' => 'No user is authenticated'], 401);
+        Auth::user()->currentAccessToken()->delete();
+        return response()->json(null, 200);
     }
 }
