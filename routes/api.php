@@ -14,10 +14,15 @@ Route::prefix('user')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::prefix('/me')->group(function () {
+    
+    });
 });
 
-//exercise_rings
 Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('users')->group(function () {
+        Route::prefix('/{user}')
+    });
 
     Route::prefix('exercise-rings')->group(function () {
         Route::get('/', [ExerciseRingController::class, 'index']);
