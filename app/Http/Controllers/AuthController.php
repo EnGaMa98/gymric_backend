@@ -23,33 +23,9 @@ class AuthController extends BaseController
         return $this->service->index($user);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(User $user, Request $request): JsonResponse
     {
-
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Usuario no autenticado'], 401);
-        }
-
-        $request->validate([
-            'name'   => 'sometimes|string|max:255',
-            'email'  => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
-            'gender' => 'sometimes|in:hombre,mujer',
-            'height' => 'sometimes|numeric',
-            'weight' => 'sometimes|numeric',
-        ]);
-        $updated = $user->update($request->only(['name', 'email', 'gender', 'height', 'weight']));
-
-        if (!$updated) {
-            return response()->json(['message' => 'No se pudo actualizar el usuario'], 500);
-        }
-
-
-        return response()->json([
-            'message' => 'Usuario actualizado correctamente',
-            'user'    => $user
-        ], 200);
+        return $this->service->store($user, $request);
     }
 
     // Registro

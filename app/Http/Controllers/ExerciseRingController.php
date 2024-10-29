@@ -21,8 +21,6 @@ class ExerciseRingController extends BaseController
 
     public function store(ExerciseRing $exerciseRing, Request $request)
     {
-        //var_dump($exerciseRing->exists);
-        //die;
         return $this->service->store($exerciseRing, $request);
     }
 

@@ -2,13 +2,10 @@
 
 namespace App\Http\Services;
 
-use App\Http\Resources\GoalResource;
 use App\Http\Resources\UserResource;
-use App\Models\Goal;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthService extends BaseService
@@ -42,29 +39,25 @@ class AuthService extends BaseService
         ]);
     }
 
-    public function store(Goal $goal, Request $request): JsonResponse
+    public function store(User $user, Request $request): JsonResponse
     {
         $request->validate([
-            'move_goal'     => 'required|integer',
-            'exercise_goal' => 'required|integer',
-            'stand_goal'    => 'required|integer',
+            'name'   => 'required|string|max:255',
+            'email'  => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'gender' => 'required|in:hombre,mujer',
+            'height' => 'required|numeric',
+            'weight' => 'required|numeric',
         ]);
-        if (!$goal->exists) {
-            $goal->user_id = Auth::id();
-        }
 
+        $user->name   = $request->name;
+        $user->email  = $request->email;
+        $user->gender = $request->gender;
+        $user->height = $request->height;
+        $user->weight = $request->weight;
 
-        Goal::where('user_id', Auth::id())->update(['isActive' => false]);
+        $user->save();
 
-
-        $goal->move_goal     = $request->move_goal;
-        $goal->exercise_goal = $request->exercise_goal;
-        $goal->stand_goal    = $request->stand_goal;
-        $goal->isActive      = true;
-
-        $goal->save();
-
-        return response()->json(new GoalResource($goal), Response::HTTP_OK);
+        return response()->json(new UserResource($user), Response::HTTP_OK);
     }
 
 }
