@@ -41,20 +41,20 @@ class GoalService extends BaseService
             'stand_goal'    => 'required|integer',
         ]);
 
-        Goal::where('user_id', Auth::id())->update(['isActive' => false]);
-
         if (!$goal->exists) {
-            $goal->user_id = Auth::id();
+            Goal::where('user_id', Auth::id())->update(['isActive' => false]);
+
+            $goal->user_id  = Auth::id();
+            $goal->isActive = true;
         }
 
         $goal->move_goal     = $request->move_goal;
         $goal->exercise_goal = $request->exercise_goal;
         $goal->stand_goal    = $request->stand_goal;
-        $goal->isActive      = true;
 
         $goal->save();
 
-        if ($goal->wasRecentlyCreated) {
+        if ($goal->isActive) {
             Auth::user()->update([
                 'goal_id' => $goal->id,
             ]);
