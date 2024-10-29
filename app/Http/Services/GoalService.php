@@ -17,32 +17,45 @@ class GoalService extends BaseService
         return Goal::class;
     }
 
-    public function index(array $include = [], array $filter = []): JsonResponse
+    public function index(Goal $goal): JsonResponse
     {
-        $goals = Goal::all();
-        return response()->json($goals);
+        $query = Goal::query();
+        if($goal->exists){
+            $query->where('id', $goal->id);
+            $data = new GoalResource($query->first());
+        } else{
+            $query->orderBy('id', 'desc');
+            $data = GoalResource::collection($query->get());
+        }
+
+        return response()->json([
+            'data'=> $data,
+        ]);
     }
     // Crear o actualitzar goal
-    public function store(Request $request): JsonResponse
+    public function store(Goal $goal, Request $request): JsonResponse
     {
         $request->validate([
             'move_goal' => 'required|integer',
             'exercise_goal' => 'required|integer',
             'stand_goal' => 'required|integer',
         ]);
-
-        // Obtenir la meta actual
-        $goal = Goal::where('user_id', $request->user()->id)->first();
-
-        if ($goal) {
-            // Si existeix, s'actualitza
-            $goal->update($request->all());
-            return response()->json($goal);
-        } else {
-            // Si no existeix, es crea una de nova
-            $goal = Goal::create(array_merge($request->all(), ['user_id' => $request->user()->id]));
-            return response()->json($goal, 201);
+        if (!$goal->exists){
+                $goal->user_id = Auth::id();
         }
+            
+      
+        Goal::where('user_id', Auth::id())->update(['isActive'=> false]);
+        
+
+        $goal->move_goal = $request->move_goal;
+        $goal->exercise_goal = $request->exercise_goal;
+        $goal->stand_goal = $request->stand_goal;
+        $goal->isActive = true;
+
+        $goal->save();
+
+        return response()->json(new GoalResource($goal), Response::HTTP_OK);
     }
 
 }

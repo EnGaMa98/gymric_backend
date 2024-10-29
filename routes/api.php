@@ -7,24 +7,36 @@ use App\Http\Controllers\ExerciseRingController;
 use App\Http\Controllers\GoalController;
 
 //User
-Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
+
+Route::prefix('user')->group(function () {
+    Route::get('/get', [AuthController::class, 'index'])->middleware('auth:sanctum');
+    Route::middleware('auth:sanctum')->put('/update', [AuthController::class, 'updateUser']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
 
 //exercise_rings
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('exercise-rings')->group(function () {
         Route::get('/', [ExerciseRingController::class, 'index']);
-        Route::get('/{exerciseRing}', [ExerciseRingController::class, 'index']);
         Route::post('/new', [ExerciseRingController::class, 'store']);
-        Route::post('/{exerciseRing}', [ExerciseRingController::class, 'store']);
-        Route::delete('/{exerciseRing}', [ExerciseRingController::class, 'destroy']);
+
+        Route::prefix('/{exerciseRing}')->group(function () {
+            Route::get('/', [ExerciseRingController::class, 'index']);
+            Route::post('/', [ExerciseRingController::class, 'store']);
+            Route::delete('/', [ExerciseRingController::class, 'destroy']);
+        });
     });
 
-    //Goals
-    Route::get('goals', [GoalController::class, 'index']);
-    Route::put('goals/{id}', [GoalController::class, 'update']);
+    Route::prefix('goals')->group(function () {
+        Route::get('/', [GoalController::class, 'index']);
+        Route::post('/new', [GoalController::class, 'store']);
 
-    //logout d'usuari
-    Route::post('logout', [AuthController::class, 'logout']);
+        Route::prefix('/{goal}')->group(function () {
+            Route::get('/', [GoalController::class, 'index']);
+        });
+    });
+    
 });

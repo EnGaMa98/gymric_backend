@@ -15,6 +15,7 @@ class Goal extends Model
             'move_goal',
             'exercise_goal',
             'stand_goal',
+            'isActive',
             'created_at',
             'updated_at',
         ];

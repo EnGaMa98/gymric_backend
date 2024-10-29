@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Http\Resources\ExerciseRingResource;
 use App\Models\ExerciseRing;
+use App\Models\Goal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,7 @@ class ExerciseRingService extends BaseService
         return ExerciseRing::class;
     }
 
-    public function index(array $include = [], array $filter = []): JsonResponse
+    public function index(ExerciseRing $exerciseRing): JsonResponse
     {
         $query = ExerciseRing::query();
 
@@ -25,10 +26,16 @@ class ExerciseRingService extends BaseService
         $query->with('user');
         $query->with('goal');
 
-        $query->orderBy('date', 'desc')->get();
+        if ($exerciseRing->exists) {
+            $query->where('id', $exerciseRing->id);
+            $data = new ExerciseRingResource($query->first());
+        } else {
+            $query->orderBy('date', 'desc');
+            $data = ExerciseRingResource::collection($query->get());
+        }
 
         return response()->json([
-            'data' => ExerciseRingResource::collection($query->get()),
+            'data' => $data,
         ]);
     }
 
@@ -40,21 +47,24 @@ class ExerciseRingService extends BaseService
             'move_progress'     => 'required|integer',
             'exercise_progress' => 'required|integer',
             'stand_progress'    => 'required|integer',
-            'date'              => 'required|date|unique:exercise_rings,date,user_id,' . Auth::id(),
+            'date'              => 'required|date',
         ]);
 
         if (!$exerciseRing->exists) {
             $exerciseRing->user_id = Auth::id();
         }
+        $activeGoal = Goal::where('user_id', Auth::id())->where('isActive', true)->first();
 
+        $exerciseRing->goal_id           = $activeGoal ? $activeGoal->id : null;
         $exerciseRing->move_progress     = $request->move_progress;
         $exerciseRing->exercise_progress = $request->exercise_progress;
         $exerciseRing->stand_progress    = $request->stand_progress;
         $exerciseRing->date              = $request->date;
+        
 
         $exerciseRing->save();
 
-        return response()->json($exerciseRing, Response::HTTP_CREATED); // Retorna el registro creado
+        return response()->json(new ExerciseRingResource($exerciseRing), $exerciseRing->wasRecentlyCreated ? Response::HTTP_CREATED : Response::HTTP_OK); // Retorna el registro creado
     }
 
     //Eliminar un exercise_ring

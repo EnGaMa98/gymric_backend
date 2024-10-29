@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class GoalController extends BaseController
 {
-    //Listar las metas
+    
     public function __construct()
     {
         $this->service = new GoalService();
@@ -15,11 +15,11 @@ class GoalController extends BaseController
 
     public function index(Goal $goal)
     {
-        return $this->service->index();
+        return $this->service->index($goal);
     }
 
-  public function store (Goal $goal, request $request)
-  {
-    $this->service->store(Goal: $goal, $request);
-  }
+    public function store (Goal $goal, request $request)
+    {
+      $this->service->store($goal, $request);
+    }
 }

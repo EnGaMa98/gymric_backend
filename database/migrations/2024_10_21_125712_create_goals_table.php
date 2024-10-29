@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('goals', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->unique();
+            $table->unsignedBigInteger('user_id');
             $table->integer('move_goal');
             $table->integer('exercise_goal');
             $table->integer('stand_goal');
+            $table->boolean('isActive');
             $table->timestamps();
+
+            $table->foreign('user_id')->references(columns: 'id')->on('users')->onDelete('cascade');
         });
     }
 

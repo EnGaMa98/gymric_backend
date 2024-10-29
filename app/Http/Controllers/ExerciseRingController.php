@@ -16,11 +16,13 @@ class ExerciseRingController extends BaseController
 
     public function index(ExerciseRing $exerciseRing)
     {
-        return $this->service->index();
+        return $this->service->index($exerciseRing);
     }
 
     public function store(ExerciseRing $exerciseRing, Request $request)
     {
+        //var_dump($exerciseRing->exists);
+        //die;
         return $this->service->store($exerciseRing, $request);
     }
 

@@ -9,8 +9,6 @@ abstract class BaseService
 {
     public abstract function getModel(): string;
 
-    public abstract function index(array $include = [], array $filter = []): JsonResponse;
-    
 
 
 }
