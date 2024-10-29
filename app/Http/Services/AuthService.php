@@ -3,29 +3,38 @@
 namespace App\Http\Services;
 
 use App\Http\Resources\GoalResource;
+use App\Http\Resources\UserResource;
 use App\Models\Goal;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class GoalService extends BaseService
+class AuthService extends BaseService
 {
 
     public function getModel(): string
     {
-        return Goal::class;
+        return User::class;
     }
 
-    public function index(Goal $goal): JsonResponse
+    public function index(User $user): JsonResponse
     {
-        $query = Goal::query();
-        if ($goal->exists) {
-            $query->where('id', $goal->id);
-            $data = new GoalResource($query->first());
+        $query = User::query();
+
+        $query->with('exerciseRings.goal');
+
+        $query->with('goals');
+
+        $query->with('goal');
+
+        if ($user->exists) {
+            $query->where('id', $user->id);
+            $data = new UserResource($query->first());
         } else {
             $query->orderBy('id', 'desc');
-            $data = GoalResource::collection($query->get());
+            $data = UserResource::collection($query->get());
         }
 
         return response()->json([
@@ -44,7 +53,9 @@ class GoalService extends BaseService
             $goal->user_id = Auth::id();
         }
 
+
         Goal::where('user_id', Auth::id())->update(['isActive' => false]);
+
 
         $goal->move_goal     = $request->move_goal;
         $goal->exercise_goal = $request->exercise_goal;

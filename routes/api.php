@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExerciseRingController;
@@ -8,20 +7,20 @@ use App\Http\Controllers\GoalController;
 
 //User
 
-Route::prefix('user')->group(function () {
-    Route::get('/get', [AuthController::class, 'index'])->middleware('auth:sanctum');
-    Route::middleware('auth:sanctum')->put('/update', [AuthController::class, 'updateUser']);
+Route::prefix('users')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::prefix('/me')->group(function () {
-    
-    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('users')->group(function () {
-        Route::prefix('/{user}')
+        Route::prefix('/{user}')->group(function () {
+            Route::where(['user' => 'me'])->group(function () {
+                Route::get('/', [AuthController::class, 'index']);
+                Route::post('/', [AuthController::class, 'store']);
+                Route::post('/logout', [AuthController::class, 'logout']);
+            });
+        });
     });
 
     Route::prefix('exercise-rings')->group(function () {
@@ -43,5 +42,5 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/', [GoalController::class, 'index']);
         });
     });
-    
+
 });
