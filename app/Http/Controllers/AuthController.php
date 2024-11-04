@@ -6,9 +6,8 @@ use App\Http\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+
+
 
 class AuthController extends BaseController
 {
@@ -28,54 +27,18 @@ class AuthController extends BaseController
         return $this->service->store($user, $request);
     }
 
-    // Registro
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
-        $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'gender'   => 'nullable|in:hombre,mujer',
-            'height'   => 'nullable|numeric',
-            'weight'   => 'nullable|numeric',
-        ]);
-
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'gender'   => $request->gender,
-            'height'   => $request->height,
-            'weight'   => $request->weight,
-        ]);
-
-        $token = $user->createToken('app')->plainTextToken;
-
-        return response()->json(['token' => $token], 201);
+        return $this->service->register($request);
     }
 
-    // Login
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
-        $request->validate([
-            'email'    => 'required|string|email|max:255',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-
-        $token = $user->createToken('app')->plainTextToken;
-        return response()->json(['token' => $token], 201);
+        return $this->service->login($request);
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
-        Auth::user()->currentAccessToken()->delete();
-        return response()->json(null, 200);
+        return $this->service->logout();
     }
 }
