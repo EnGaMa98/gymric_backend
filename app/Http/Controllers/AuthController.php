@@ -6,9 +6,8 @@ use App\Http\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+
+
 
 class AuthController extends BaseController
 {
@@ -23,87 +22,23 @@ class AuthController extends BaseController
         return $this->service->index($user);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(User $user, Request $request): JsonResponse
     {
-
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Usuario no autenticado'], 401);
-        }
-
-        $request->validate([
-            'name'   => 'sometimes|string|max:255',
-            'email'  => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
-            'gender' => 'sometimes|in:hombre,mujer',
-            'height' => 'sometimes|numeric',
-            'weight' => 'sometimes|numeric',
-        ]);
-        $updated = $user->update($request->only(['name', 'email', 'gender', 'height', 'weight']));
-
-        if (!$updated) {
-            return response()->json(['message' => 'No se pudo actualizar el usuario'], 500);
-        }
-
-
-        return response()->json([
-            'message' => 'Usuario actualizado correctamente',
-            'user'    => $user
-        ], 200);
+        return $this->service->store($user, $request);
     }
 
-    // Registro
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
-        $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'gender'   => 'nullable|in:hombre,mujer',
-            'height'   => 'nullable|numeric',
-            'weight'   => 'nullable|numeric',
-        ]);
-
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'gender'   => $request->gender,
-            'height'   => $request->height,
-            'weight'   => $request->weight,
-        ]);
-
-        $token = $user->createToken('app')->plainTextToken;
-
-        return response()->json(['token' => $token], 201);
+        return $this->service->register($request);
     }
 
-    // Login
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
-        $request->validate([
-            'email'    => 'required|string|email|max:255',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-
-        $token = $user->createToken('app')->plainTextToken;
-        return response()->json(['token' => $token], 201);
+        return $this->service->login($request);
     }
 
-    public function logout(Request $request)
+    public function logout(): JsonResponse
     {
-        if (auth()->check()) {
-            auth()->logout();
-            return response()->json(['message' => 'Successfully logged out'], 200);
-        }
-
-        return response()->json(['message' => 'No user is authenticated'], 401);
+        return $this->service->logout();
     }
 }

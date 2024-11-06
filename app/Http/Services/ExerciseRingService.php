@@ -53,14 +53,12 @@ class ExerciseRingService extends BaseService
         if (!$exerciseRing->exists) {
             $exerciseRing->user_id = Auth::id();
         }
-        $activeGoal = Goal::where('user_id', Auth::id())->where('isActive', true)->first();
 
-        $exerciseRing->goal_id           = $activeGoal ? $activeGoal->id : null;
+        $exerciseRing->goal_id           = Auth::user()->goal_id;
         $exerciseRing->move_progress     = $request->move_progress;
         $exerciseRing->exercise_progress = $request->exercise_progress;
         $exerciseRing->stand_progress    = $request->stand_progress;
         $exerciseRing->date              = $request->date;
-        
 
         $exerciseRing->save();
 
