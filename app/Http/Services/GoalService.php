@@ -42,7 +42,7 @@ class GoalService extends BaseService
         ]);
 
         if (!$goal->exists) {
-            Goal::where('user_id', Auth::id())->update(['isActive' => false]);
+            Goal::query()->update(['isActive' => false]);
 
             $goal->user_id  = Auth::id();
             $goal->isActive = true;
