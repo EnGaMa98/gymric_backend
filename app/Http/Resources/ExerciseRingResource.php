@@ -12,14 +12,22 @@ class ExerciseRingResource extends JsonResource
         $result = [
             'id'     => $this->id,
             'fields' => [
-                'move_progress'     => $this->move_progress,
-                'exercise_progress' => $this->exercise_progress,
-                'stand_progress'    => $this->stand_progress,
-                'date'              => $this->date,
+                'value' => [
+                    'move'     => $this->move_progress,
+                    'exercise' => $this->exercise_progress,
+                    'stand'    => $this->stand_progress,
+                ],
+                'date'  => $this->date,
             ],
         ];
 
         if ($this->relationLoaded('goal')) {
+            $result['fields']['progress'] = [
+                'move'     => $this->progress('move'),
+                'exercise' => $this->progress('exercise'),
+                'stand'    => $this->progress('stand'),
+            ];
+
             $result['goal'] = new GoalResource($this->goal);
         }
 

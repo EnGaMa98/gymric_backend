@@ -34,6 +34,18 @@ class ExerciseRing extends Model
         });
     }
 
+    public function progress(string $property): int
+    {
+        $value     = $this->{$property . '_progress'};
+        $goalValue = $this->goal->{$property . '_goal'};
+
+        if ($goalValue > 0) {
+            return min(100, $value / $goalValue * 100);
+        } else {
+            return 0;
+        }
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

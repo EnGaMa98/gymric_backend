@@ -12,9 +12,11 @@ class GoalResource extends JsonResource
         $result = [
             'id'     => $this->id,
             'fields' => [
-                'move_goal'     => $this->move_goal,
-                'exercise_goal' => $this->exercise_goal,
-                'stand_goal'    => $this->stand_goal,
+                'value' => [
+                    'move'     => $this->move_goal,
+                    'exercise' => $this->exercise_goal,
+                    'stand'    => $this->stand_goal,
+                ],
             ],
         ];
 
